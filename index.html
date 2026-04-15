@@ -263,6 +263,130 @@ canvas#bgCanvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;poi
 .elimRemain{font-size:14px;color:#4f4;margin-top:8px;}
 .elimBtn{margin-top:12px;padding:10px 30px;font-size:14px;border:none;border-radius:20px;background:linear-gradient(135deg,#f44,#c44);color:#fff;font-weight:bold;cursor:pointer;transition:.2s;}
 .elimBtn:hover{box-shadow:0 0 16px rgba(255,60,60,.4);}
+
+/* ==================== 移动端自适应 ==================== */
+@media(max-width:768px){
+  /* 基础 */
+  body{overflow:auto;height:auto;min-height:100vh;}
+  #gameUI{position:relative;min-height:100vh;overflow:auto;}
+  /* 开始界面 */
+  #startScreen h1{font-size:32px;letter-spacing:2px;}
+  #startScreen .sub{font-size:14px;margin-bottom:20px;}
+  .heroSelect{gap:8px;}
+  .heroCard{width:100px;padding:10px 6px;}
+  .heroCard .icon{font-size:32px;}
+  .heroCard .hname{font-size:12px;}
+  .heroCard .hdesc{font-size:9px;}
+  #btnStart{padding:10px 36px;font-size:16px;}
+  /* 顶部栏 */
+  .topBar{height:auto;min-height:36px;padding:4px 8px;gap:4px;flex-wrap:wrap;}
+  .topBar .round{font-size:12px;}
+  .topBar .gold{font-size:12px;}
+  .topBar .gold em{font-size:14px;}
+  .topBar .hp{font-size:12px;}
+  .topBar .phase{font-size:10px;padding:2px 8px;}
+  #heroTrait{font-size:9px!important;padding:2px 6px!important;display:none!important;}
+  #perksText{font-size:9px!important;padding:2px 6px!important;}
+  #lvlText{font-size:10px!important;}
+  /* 主布局：玩家面板隐藏，改为可展开 */
+  .playersPanel{display:none;position:fixed;left:0;top:36px;bottom:0;width:160px;z-index:50;background:rgba(10,10,30,.98);border-right:1px solid #444;}
+  .playersPanel.mobileShow{display:block;}
+  /* 中间区域全宽 */
+  div[style*="flex:1;display:flex;overflow:hidden"]{flex-direction:column;}
+  .midArea{flex:1;overflow:auto;}
+  /* 商店阶段 */
+  #shopPhase{padding:6px;overflow:auto;}
+  .shopTitle{font-size:13px;margin-bottom:4px;}
+  .shopBtns{gap:4px;margin-bottom:6px;flex-wrap:wrap;}
+  .shopBtns button{padding:5px 10px;font-size:10px;}
+  .shopItems{gap:6px;max-height:none;min-height:60px;margin-bottom:6px;}
+  .shopItem{width:85px;padding:6px;border-radius:8px;}
+  .shopItem.size2{width:120px;min-height:80px;}
+  .shopItem.size3{width:140px;min-height:85px;}
+  .shopItem .sIcon{font-size:22px;}
+  .shopItem.size2 .sIcon{font-size:28px;}
+  .shopItem.size3 .sIcon{font-size:32px;}
+  .shopItem .sName{font-size:9px;margin:2px 0 1px;}
+  .shopItem .sDesc{font-size:7px;min-height:18px;}
+  .shopItem .sCost{font-size:9px;top:2px;right:3px;}
+  .shopItem .sRarity{font-size:7px;top:2px;left:3px;padding:0 3px;}
+  /* 背包 */
+  .myBoard{gap:4px;padding-top:4px;}
+  .boardLabel{font-size:10px;}
+  .boardSlots{gap:4px;}
+  .slot{width:56px;height:56px;border-radius:6px;}
+  .slot.size2{width:116px;}
+  .slot.size3{width:176px;}
+  .slot .slIcon{font-size:18px;}
+  .slot .slName{font-size:7px;max-width:50px;}
+  .slot .slLv{font-size:7px;}
+  .slot .slRarity{font-size:6px;padding:0 2px;}
+  /* 仓库 */
+  .storageArea{margin-top:4px;padding-top:4px;}
+  .storageLabel{font-size:9px;}
+  .storageSlots{gap:3px;}
+  .storageSlot{width:40px;height:40px;}
+  .storageSlot .ssIcon{font-size:14px;}
+  .storageSlot .ssName{font-size:6px;}
+  /* 出售区 */
+  .sellZone{min-height:40px;font-size:11px;margin-top:4px;}
+  .sellZone .sellIcon{font-size:20px;}
+  /* 战斗阶段 */
+  #battlePhase{padding:6px;}
+  .battleInfo .vs{font-size:16px;}
+  .battleField{gap:8px;padding:0 4px;flex-direction:column;align-items:stretch;}
+  .bSide{max-width:100%;display:flex;flex-direction:column;align-items:center;}
+  .bSide h3{font-size:12px;margin-bottom:4px;}
+  .hpBarWrap{height:14px;margin:4px 0;}
+  .hpText{font-size:9px!important;}
+  .bItems{gap:3px;}
+  .bItem{width:48px;height:48px;font-size:16px;border-radius:6px;}
+  .bItem .biName{font-size:6px;bottom:2px;}
+  .bItem .biStat{font-size:6px;}
+  .bItem .biStatTotal{font-size:5px;}
+  .battleLog{max-height:60px;padding:4px;margin-top:4px;}
+  .battleLog p{font-size:9px;}
+  .battleTimer{font-size:11px;}
+  /* 战报弹窗 */
+  .resultBox{padding:16px 20px;max-width:95vw!important;max-height:85vh!important;}
+  .resultBox h2{font-size:20px;}
+  .resultBox .rDetail{font-size:11px;}
+  .resultBox button{padding:8px 24px;font-size:14px;}
+  /* 事件弹窗 */
+  .eventBox{padding:16px;max-width:95vw!important;}
+  .eventBox h2{font-size:18px;}
+  .eventBox .eDesc{font-size:11px;}
+  .eventOpts{gap:8px;}
+  .eventOpt{padding:8px 12px;min-width:90px;}
+  .eventOpt .eoName{font-size:12px;}
+  .eventOpt .eoDesc{font-size:8px;}
+  /* 肉鸽技能弹窗 */
+  .perkBox{padding:16px 14px!important;max-width:95vw!important;}
+  .perkChoices{gap:8px;}
+  .perkCard{min-width:100px;max-width:140px;padding:12px 8px;}
+  .pkIcon{font-size:26px;margin:4px 0;}
+  .pkName{font-size:12px;}
+  .pkDesc{font-size:10px;}
+  /* 淘汰动画 */
+  .elimTitle{font-size:22px;}
+  .elimCard{padding:14px 16px;min-width:100px;}
+  .elimIcon{font-size:30px;}
+  /* 最终排名 */
+  #finalScreen h1{font-size:32px;}
+  .rankList li{font-size:14px;padding:4px 16px;}
+  .rankList li:first-child{font-size:16px;}
+  /* tooltip */
+  .tooltip{max-width:180px!important;font-size:10px;}
+  /* 贡献度条 */
+  .contribEntry{font-size:8px!important;}
+  .ceBar{height:6px!important;}
+}
+
+/* 玩家面板切换按钮（仅移动端显示） */
+.mobilePlayersBtn{display:none;position:fixed;left:6px;top:40px;z-index:55;width:32px;height:32px;border-radius:50%;border:1px solid #555;background:rgba(20,20,50,.9);color:#ffd200;font-size:14px;text-align:center;line-height:32px;cursor:pointer;}
+@media(max-width:768px){
+  .mobilePlayersBtn{display:block;}
+}
 </style>
 </head>
 <body>
@@ -278,6 +402,7 @@ canvas#bgCanvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;poi
 
 <!-- 游戏主界面 -->
 <div id="gameUI">
+  <div class="mobilePlayersBtn" onclick="toggleMobilePlayers()">👥</div>
   <div class="topBar">
     <span class="round" id="roundText">第 1 回合</span>
     <span class="gold">💰 <em id="goldText">10</em></span>
@@ -2014,6 +2139,10 @@ document.addEventListener('mousemove',function(e){
   if(!found)hideTooltip();
   else{t.style.left=Math.min(e.clientX+12,innerWidth-260)+'px';t.style.top=Math.min(e.clientY+12,innerHeight-150)+'px';}
 });
+function toggleMobilePlayers(){
+  let p=document.getElementById('playersPanel');
+  p.classList.toggle('mobileShow');
+}
 function floatMsg(txt,color){
   let d=document.createElement('div');d.className='floatNum';d.textContent=txt;d.style.color=color||'#fff';
   d.style.left='50%';d.style.top='45%';d.style.transform='translateX(-50%)';
