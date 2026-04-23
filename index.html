@@ -323,11 +323,14 @@ canvas#bgCanvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;poi
   .slot .slRarity{font-size:6px;padding:0 2px;}
   /* 仓库 */
   .storageArea{margin-top:4px;padding-top:4px;}
-  .storageLabel{font-size:9px;}
+  .storageLabel{font-size:9px;flex-wrap:wrap;line-height:1.4;}
   .storageSlots{gap:3px;}
   .storageSlot{width:40px;height:40px;}
   .storageSlot .ssIcon{font-size:14px;}
   .storageSlot .ssName{font-size:6px;}
+  /* 背包标签 */
+  .boardLabel{font-size:9px!important;}
+  .stHint{display:none;}
   /* 出售区 */
   .sellZone{min-height:40px;font-size:11px;margin-top:4px;}
   .sellZone .sellIcon{font-size:20px;}
@@ -426,10 +429,10 @@ canvas#bgCanvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;poi
         </div>
         <div class="shopItems" id="shopItems"></div>
         <div class="myBoard">
-          <div class="boardLabel" id="boardLabel">📦 我的物品栏 (0/4格已用) — 拖拽物品到下方出售</div>
+          <div class="boardLabel" id="boardLabel">📦 物品栏 (0/4格) — 拖拽出售</div>
           <div class="boardSlots" id="boardSlots"></div>
           <div class="storageArea">
-            <div class="storageLabel">🏪 仓库 (<span class="stCount" id="storageCount">0/6</span>) — 点击仓库道具可放回背包，点击背包道具可放入仓库</div>
+            <div class="storageLabel">🏪 仓库 (<span class="stCount" id="storageCount">0/6</span>) <span class="stHint">— 点击道具移动</span></div>
             <div class="storageSlots" id="storageSlots"></div>
           </div>
           <div class="sellZone" id="sellZone"><span class="sellIcon">💸</span>拖拽到此处出售 (返还50%金币)</div>
@@ -955,7 +958,7 @@ function renderBoard(){
     c.appendChild(d);
   }
   let lbl=document.getElementById('boardLabel');
-  if(lbl)lbl.textContent='📦 我的物品栏 ('+usedSlots+'/'+G.maxSlots+'格已用) — 拖拽物品到下方出售';
+  if(lbl)lbl.textContent='📦 物品栏 ('+usedSlots+'/'+G.maxSlots+'格) — 拖拽出售';
 }
 function startShopTimer(){
   G.shopTime=45;clearInterval(G.shopTimer);
