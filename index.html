@@ -297,17 +297,17 @@ canvas#bgCanvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;poi
   /* 商店阶段 */
   #shopPhase{padding:6px;overflow:auto;}
   .shopTitle{font-size:13px;margin-bottom:4px;}
-  .shopBtns{gap:4px;margin-bottom:6px;flex-wrap:wrap;}
+  .shopBtns{gap:4px;margin-bottom:4px;flex-wrap:wrap;}
   .shopBtns button{padding:5px 10px;font-size:10px;}
-  .shopItems{gap:6px;max-height:none;min-height:60px;margin-bottom:6px;}
-  .shopItem{width:85px;padding:6px;border-radius:8px;}
-  .shopItem.size2{width:120px;min-height:80px;}
-  .shopItem.size3{width:140px;min-height:85px;}
-  .shopItem .sIcon{font-size:22px;}
+  .shopItems{gap:5px;max-height:none;min-height:0;margin-bottom:4px;}
+  .shopItem{width:calc(50% - 4px);padding:8px 6px;border-radius:8px;min-height:0;}
+  .shopItem.size2{width:calc(50% - 4px);min-height:0;}
+  .shopItem.size3{width:calc(50% - 4px);min-height:0;}
+  .shopItem .sIcon{font-size:24px;}
   .shopItem.size2 .sIcon{font-size:28px;}
-  .shopItem.size3 .sIcon{font-size:32px;}
-  .shopItem .sName{font-size:9px;margin:2px 0 1px;}
-  .shopItem .sDesc{font-size:7px;min-height:18px;}
+  .shopItem.size3 .sIcon{font-size:30px;}
+  .shopItem .sName{font-size:10px;margin:2px 0 1px;}
+  .shopItem .sDesc{font-size:7px;min-height:0;line-height:1.3;}
   .shopItem .sCost{font-size:9px;top:2px;right:3px;}
   .shopItem .sRarity{font-size:7px;top:2px;left:3px;padding:0 3px;}
   /* 背包 */
@@ -386,7 +386,7 @@ canvas#bgCanvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;poi
 }
 
 /* 玩家面板切换按钮（仅移动端显示） */
-.mobilePlayersBtn{display:none;position:fixed;left:6px;top:40px;z-index:55;width:32px;height:32px;border-radius:50%;border:1px solid #555;background:rgba(20,20,50,.9);color:#ffd200;font-size:14px;text-align:center;line-height:32px;cursor:pointer;}
+.mobilePlayersBtn{display:none;position:fixed;right:8px;bottom:60px;z-index:55;width:36px;height:36px;border-radius:50%;border:1px solid #555;background:rgba(20,20,50,.95);color:#ffd200;font-size:16px;text-align:center;line-height:36px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.5);}
 @media(max-width:768px){
   .mobilePlayersBtn{display:block;}
 }
