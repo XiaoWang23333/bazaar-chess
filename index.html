@@ -9,7 +9,7 @@
 body{font-family:'Microsoft YaHei',sans-serif;background:#0a0a1a;color:#fff;overflow:hidden;height:100vh;user-select:none;}
 canvas#bgCanvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;}
 /* 开始界面 */
-#startScreen{position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(ellipse at center,rgba(20,15,40,.9),rgba(5,5,15,.98) 70%);}
+#startScreen{position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;background:radial-gradient(ellipse at center,rgba(20,15,40,.9),rgba(5,5,15,.98) 70%);overflow-y:auto;padding:40px 10px 60px;}
 #startScreen h1{font-size:64px;background:linear-gradient(135deg,#f7971e,#ffd200,#e44d26,#ff6b6b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:0 0 40px rgba(255,180,0,.3);margin-bottom:8px;letter-spacing:4px;}
 #startScreen .sub{font-size:20px;color:#aaa;margin-bottom:40px;letter-spacing:2px;}
 .heroSelect{display:flex;gap:16px;margin-bottom:36px;flex-wrap:wrap;justify-content:center;}
@@ -409,6 +409,10 @@ canvas#bgCanvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;poi
   <h1>大巴扎 · 自走棋</h1>
   <div class="sub">🏪 商店构建 × ♟️ 八人混战 · 最后一人站立</div>
   <div class="heroSelect" id="heroSelect"></div>
+  <div style="display:flex;gap:10px;margin:8px 0 22px;align-items:center;">
+    <button id="btnStart" onclick="startGame()">开始对战</button>
+    <button onclick="openCodex()" style="padding:12px 20px;font-size:14px;border:2px solid #4d96ff;border-radius:26px;background:rgba(30,40,90,.8);color:#9cc9ff;font-weight:bold;cursor:pointer;letter-spacing:1px;transition:.2s;">📖 图鉴</button>
+  </div>
   <div id="modeSelect" style="margin:18px 0 14px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
     <div class="modeCard sel" data-mode="normal" style="cursor:pointer;padding:12px 22px;border-radius:14px;border:2px solid #4ade80;background:rgba(30,60,30,.6);min-width:180px;text-align:center;transition:.25s;">
       <div style="font-size:22px;">😊</div>
@@ -421,7 +425,16 @@ canvas#bgCanvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;poi
       <div style="font-size:10px;color:#aaa;margin-top:4px;line-height:1.4;">AI +3 金/回合 +10 HP<br>起始技能 · 最优技能选择</div>
     </div>
   </div>
-  <button id="btnStart" onclick="startGame()">开始对战</button>
+  <div id="hpCfg" style="margin:6px auto 30px;max-width:420px;padding:10px 18px;background:rgba(20,20,45,.6);border:1px solid rgba(255,210,0,.2);border-radius:12px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px;">
+      <span style="font-size:13px;color:#ffd200;">❤️ 所有玩家生命值</span>
+      <span id="hpCfgVal" style="font-size:14px;font-weight:bold;color:#fff;">100</span>
+    </div>
+    <input type="range" id="hpCfgSlider" min="50" max="200" step="10" value="100" style="width:100%;accent-color:#ffd200;">
+    <div style="font-size:10px;color:#888;margin-top:4px;display:flex;justify-content:space-between;">
+      <span>50 (极速)</span><span>100 (默认)</span><span>200 (持久)</span>
+    </div>
+  </div>
 </div>
 
 <!-- 游戏主界面 -->
@@ -441,10 +454,11 @@ canvas#bgCanvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;poi
     <div class="midArea">
       <!-- 商店 -->
       <div id="shopPhase">
-        <div class="shopTitle">🏪 巴扎商店 <span class="goldDisplay" id="goldDisplay">💰 <em>6</em></span> <span class="timer" id="shopTimer">剩余 45s</span></div>
+        <div class="shopTitle">🏪 巴扎商店 <span class="goldDisplay" id="goldDisplay">💰 <em>6</em></span> <span class="timer" id="battleHpInfo" style="background:rgba(231,76,60,.15);color:#f87;border:1px solid rgba(231,76,60,.3);">⚔️ 战斗HP:<span id="battleHpVal">120</span></span> <span class="timer" id="shopTimer">剩余 45s</span></div>
         <div class="shopBtns">
           <button class="btnRefresh" onclick="refreshShop()">🔄 刷新 (1💰)</button>
           <button class="btnExpand" id="btnExpand" onclick="expandSlots()">📦 扩充格子 (<span id="expandCostText">6💰</span>)</button>
+          <button class="btnExpand" id="btnExpandStorage" onclick="expandStorage()" style="background:linear-gradient(135deg,#3b82f6,#60a5fa);">🏪 扩仓库 (<span id="expandStorageCostText">5💰</span>)</button>
           <button class="btnFreeze" onclick="toggleFreeze()">❄️ 冻结</button>
         </div>
         <div class="shopItems" id="shopItems"></div>
@@ -478,6 +492,10 @@ canvas#bgCanvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;poi
 
 <!-- 合成动画 -->
 <div id="mergeOverlay"></div>
+<!-- 图鉴浮窗 -->
+<div id="codexOverlay" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);overflow-y:auto;padding:20px 10px;">
+  <div id="codexBox" style="max-width:900px;margin:0 auto;background:rgba(15,15,40,.97);border:2px solid #4d96ff;border-radius:16px;padding:20px 24px;"></div>
+</div>
 <!-- 回合结算 -->
 <div id="resultOverlay"><div class="resultBox" id="resultBox"></div></div>
 <!-- 事件 -->
@@ -508,23 +526,23 @@ const ITEMS_DB=[
   {id:'sword',name:'长剑',icon:'⚔️',type:'weapon',rarity:'common',cost:4,cd:2.2,dmg:11,desc:'每2.2s造成11点伤害',size:1},
   {id:'axe',name:'战斧',icon:'🪓',type:'weapon',rarity:'rare',cost:6,cd:3.0,dmg:20,desc:'猛力一击，每3s造成20点伤害',size:2},
   {id:'bow',name:'猎弓',icon:'🏹',type:'weapon',rarity:'common',cost:4,cd:1.8,dmg:10,desc:'远程攻击每1.8s造成10点伤害',size:1},
-  {id:'staff',name:'法杖',icon:'🪄',type:'weapon',rarity:'rare',cost:7,cd:2.6,dmg:19,desc:'魔法打击每2.6s造成19点伤害',size:2},
-  {id:'hammer',name:'雷霆锤',icon:'🔨',type:'weapon',rarity:'epic',cost:10,cd:3.5,dmg:40,desc:'电击每3.5s造成40点伤害',size:2},
-  {id:'scythe',name:'死神镰',icon:'⚰️',type:'weapon',rarity:'legend',cost:15,cd:3.2,dmg:40,desc:'每3.2s造成40伤害+12%吸血',size:3,lifesteal:0.12},
-  {id:'cannon',name:'火炮',icon:'💣',type:'weapon',rarity:'epic',cost:11,cd:4.2,dmg:48,desc:'每4.2s轰击48点伤害',size:3},
-  // 防御类 — 护盾削弱: common ~3.5/s, rare ~5.5/s, epic ~8/s（约武器DPS的60-70%）
-  {id:'shield_s',name:'木盾',icon:'🛡️',type:'shield',rarity:'common',cost:3,cd:3.0,shield:11,desc:'每3s产生11点护盾',size:1},
-  {id:'shield_m',name:'铁盾',icon:'🛡️',type:'shield',rarity:'rare',cost:6,cd:3.5,shield:20,desc:'每3.5s产生20点护盾',size:2},
-  {id:'shield_l',name:'圣光盾',icon:'✨',type:'shield',rarity:'epic',cost:10,cd:4.0,shield:32,desc:'每4s产生32点护盾',size:2},
-  // 治疗类 — 削弱: common ~3/s, rare ~5/s, legend ~8/s（约武器DPS的50-65%）
-  {id:'potion',name:'药水',icon:'🧪',type:'heal',rarity:'common',cost:3,cd:3.0,heal:9,desc:'每3s恢复9点生命',size:1},
-  {id:'herb',name:'仙草',icon:'🌿',type:'heal',rarity:'rare',cost:5,cd:3.5,heal:18,desc:'每3.5s恢复18点生命',size:1},
-  {id:'grail',name:'圣杯',icon:'🏆',type:'heal',rarity:'legend',cost:14,cd:4.5,heal:36,desc:'每4.5s恢复36点生命',size:2},
-  // DOT类 — 削弱叠层和伤害
-  {id:'torch',name:'火把',icon:'🔥',type:'burn',rarity:'common',cost:3,cd:2.5,burnDmg:4,burnStack:2,desc:'每2.5s叠2层灼烧(4/层/s)',size:1},
-  {id:'bomb',name:'燃烧弹',icon:'💥',type:'burn',rarity:'rare',cost:6,cd:3.0,burnDmg:5,burnStack:3,desc:'每3s叠3层灼烧(5/层/s)',size:2},
-  {id:'vial',name:'毒瓶',icon:'☠️',type:'poison',rarity:'common',cost:4,cd:2.8,poisonDmg:5,poisonStack:2,desc:'每2.8s叠2层毒素(5/层/s)无视护盾',size:1},
-  {id:'cobra',name:'毒蛇',icon:'🐍',type:'poison',rarity:'rare',cost:7,cd:2.8,poisonDmg:6,poisonStack:3,desc:'每2.8s叠3层毒(6/层/s)无视护盾',size:2},
+  {id:'staff',name:'法杖',icon:'🪄',type:'weapon',rarity:'rare',cost:7,cd:2.8,dmg:17,desc:'魔法打击每2.8s造成17点伤害',size:2},
+  {id:'hammer',name:'雷霆锤',icon:'🔨',type:'weapon',rarity:'epic',cost:10,cd:3.6,dmg:32,desc:'电击每3.6s造成32点伤害',size:2},
+  {id:'scythe',name:'死神镰',icon:'⚰️',type:'weapon',rarity:'legend',cost:15,cd:3.4,dmg:34,desc:'每3.4s造成34伤害+12%吸血',size:3,lifesteal:0.12},
+  {id:'cannon',name:'火炮',icon:'💣',type:'weapon',rarity:'epic',cost:11,cd:4.4,dmg:40,desc:'每4.4s轰击40点伤害',size:3},
+  // 防御类 — 护盾: common ~4/s, rare ~6/s, epic ~9/s（约武器DPS的70-80%）
+  {id:'shield_s',name:'木盾',icon:'🛡️',type:'shield',rarity:'common',cost:3,cd:3.0,shield:13,desc:'每3s产生13点护盾',size:1},
+  {id:'shield_m',name:'铁盾',icon:'🛡️',type:'shield',rarity:'rare',cost:6,cd:3.5,shield:23,desc:'每3.5s产生23点护盾',size:2},
+  {id:'shield_l',name:'圣光盾',icon:'✨',type:'shield',rarity:'epic',cost:10,cd:4.0,shield:36,desc:'每4s产生36点护盾',size:2},
+  // 治疗类 — common ~3.5/s, rare ~6/s, legend ~9/s（约武器DPS的60-75%）
+  {id:'potion',name:'药水',icon:'🧪',type:'heal',rarity:'common',cost:3,cd:3.0,heal:11,desc:'每3s恢复11点生命',size:1},
+  {id:'herb',name:'仙草',icon:'🌿',type:'heal',rarity:'rare',cost:5,cd:3.5,heal:21,desc:'每3.5s恢复21点生命',size:1},
+  {id:'grail',name:'圣杯',icon:'🏆',type:'heal',rarity:'legend',cost:14,cd:4.5,heal:40,desc:'每4.5s恢复40点生命',size:2},
+  // DOT类 — 叠层略增强
+  {id:'torch',name:'火把',icon:'🔥',type:'burn',rarity:'common',cost:3,cd:2.4,burnDmg:5,burnStack:2,desc:'每2.4s叠2层灼烧(5/层/s)',size:1},
+  {id:'bomb',name:'燃烧弹',icon:'💥',type:'burn',rarity:'rare',cost:6,cd:2.8,burnDmg:6,burnStack:3,desc:'每2.8s叠3层灼烧(6/层/s)',size:2},
+  {id:'vial',name:'毒瓶',icon:'☠️',type:'poison',rarity:'common',cost:4,cd:2.6,poisonDmg:6,poisonStack:2,desc:'每2.6s叠2层毒素(6/层/s)无视护盾',size:1},
+  {id:'cobra',name:'毒蛇',icon:'🐍',type:'poison',rarity:'rare',cost:7,cd:2.6,poisonDmg:7,poisonStack:3,desc:'每2.6s叠3层毒(7/层/s)无视护盾',size:2},
   // 增益类 — 暴击削弱，其他微调
   {id:'ring',name:'力量戒指',icon:'💍',type:'buff',rarity:'rare',cost:5,cd:0,buffType:'dmgUp',buffVal:0.10,desc:'所有武器伤害+10%',size:1},
   {id:'cloak',name:'疾风斗篷',icon:'🧣',type:'buff',rarity:'rare',cost:6,cd:0,buffType:'hasteAll',buffVal:0.10,desc:'所有物品冷却-10%',size:1},
@@ -618,7 +636,7 @@ const TYPE_LABEL={weapon:'⚔️武器',shield:'🛡️防御',heal:'💊治疗'
 const TYPE_COLOR={weapon:'#f88',shield:'#4df',heal:'#4f4',burn:'#fa0',poison:'#c4f',buff:'#ff0',special:'#c8f'};
 
 // ============== 全局状态 ==============
-let G={round:0,phase:'start',gold:0,maxSlots:4,maxStorage:4,shopTimer:null,shopTime:45,frozen:false,myHero:null,players:[],myIdx:0,elimOrder:[],battleSpeed:1,difficulty:'normal'};
+let G={round:0,phase:'start',gold:0,maxSlots:4,maxStorage:4,shopTimer:null,shopTime:45,frozen:false,myHero:null,players:[],myIdx:0,elimOrder:[],battleSpeed:1,difficulty:'normal',startHpOverride:0};
 
 // ============== 背景粒子 ==============
 const cvs=document.getElementById('bgCanvas'),ctx=cvs.getContext('2d');
@@ -663,19 +681,33 @@ initBg();drawBg();window.addEventListener('resize',initBg);
   });
 })();
 
+// ============== HP 配置滑块 ==============
+(function initHpSlider(){
+  const s=document.getElementById('hpCfgSlider');
+  const v=document.getElementById('hpCfgVal');
+  if(!s||!v)return;
+  s.oninput=function(){
+    v.textContent=s.value;
+    G.startHpOverride=parseInt(s.value);
+  };
+})();
+
 // ============== 启动游戏 ==============
 function startGame(){
   document.getElementById('startScreen').style.display='none';
   document.getElementById('gameUI').style.display='flex';
   const hard=G.difficulty==='hard';
+  const customHp=G.startHpOverride>0?G.startHpOverride:0;
   // 初始化8位玩家
   G.players=[];
   G.myIdx=0;
-  G.players.push({name:'我 ('+G.myHero.name+')',hero:G.myHero,hp:G.myHero.baseHp,maxHp:G.myHero.baseHp,gold:6,items:[],storage:[],perks:[],alive:true,wins:0,losses:0,ai:false,lv:1,xp:0,xpNeed:2});
+  const myHp=customHp>0?customHp:G.myHero.baseHp;
+  G.players.push({name:'我 ('+G.myHero.name+')',hero:G.myHero,hp:myHp,maxHp:myHp,gold:6,items:[],storage:[],perks:[],alive:true,wins:0,losses:0,ai:false,lv:1,xp:0,xpNeed:2});
   for(let i=0;i<7;i++){
     let h=HEROES[Math.floor(Math.random()*HEROES.length)];
     // 困难模式：AI战斗HP+10、起始随机1个tier1技能
-    let aiMaxHp=h.baseHp+(hard?10:0);
+    let baseHp=customHp>0?customHp:h.baseHp;
+    let aiMaxHp=baseHp+(hard?10:0);
     let startPerks=[];
     if(hard){
       let t1=PERKS.filter(p=>p.tier===1);
@@ -811,7 +843,14 @@ function buyItem(idx){
   }
   // 背包满时，检查是否能合成
   if(bagFull&&canMergeWith(me,it)){
+    // 背包内存在可合成对象：先扣钱→入背包→checkMerge 会自动消耗合并
+    me.gold-=it.cost;G.gold=me.gold;
+    me.items.push({...it});
+    shopOffers[idx]._sold=true;
     floatMsg('背包已满，自动合成!','#ffd200');
+    checkMerge(me);
+    renderShop();renderBoard();renderStorage();updateTopBar();
+    return;
   }else if(bagFull&&me.storage.length<G.maxStorage){
     me.gold-=it.cost;G.gold=me.gold;
     me.storage.push({...it,lv:1});
@@ -885,18 +924,29 @@ function checkMerge(player){
     playMergeAnimations();
   }
 }
+let mergeAnimPlaying=false;
 function playMergeAnimations(){
+  // 加锁：_playNextMergeAnim 会持续消费队列直到空，无需外部重复触发
+  if(mergeAnimPlaying)return;
   if(mergeQueue.length===0)return;
+  mergeAnimPlaying=true;
+  _playNextMergeAnim();
+}
+function _playNextMergeAnim(){
+  if(mergeQueue.length===0){
+    mergeAnimPlaying=false;
+    return;
+  }
   let info=mergeQueue.shift();
   showMergeAnimation(info,()=>{
     renderBoard();renderStorage();updateTopBar();
-    if(mergeQueue.length>0){
-      setTimeout(()=>playMergeAnimations(),200);
-    }
+    // 继续下一个（即使队列期间被 push 新项也能处理）
+    setTimeout(_playNextMergeAnim,200);
   });
 }
 function showMergeAnimation(info,onDone){
   const overlay=document.getElementById('mergeOverlay');
+  // 兜底：强制清除任何残留状态
   overlay.className='active';
   overlay.style.display='flex';
   // 构建动画HTML
@@ -921,12 +971,17 @@ function showMergeAnimation(info,onDone){
     <div class="mergeResultName">⚡ ${info.name} Lv${info.oldLv} → Lv${info.newLv}</div>
   `;
   // 1.5秒后自动关闭
-  setTimeout(()=>{
+  let done=false;
+  const finish=()=>{
+    if(done)return;done=true;
     overlay.style.display='none';
     overlay.className='';
     overlay.innerHTML='';
     if(onDone)onDone();
-  },1600);
+  };
+  setTimeout(finish,1600);
+  // 双保险：2.5秒后也强制清理（应对切换tab等setTimeout被节流）
+  setTimeout(()=>{if(!done){finish();}},2500);
 }
 function showMergeNotice(item){
   // 保留简单提示备用（AI用）
@@ -1017,19 +1072,53 @@ function doStoreItem(idx){
   renderBoard();renderStorage();updateTopBar();
 }
 function storageClick(idx){
-  // 点击仓库道具 → 放回背包（如果能合成则允许即使背包满）
+  // 点击仓库道具 → 放回背包（如果能合成则允许即使背包满；若背包满且不能合成，弹出操作菜单以便出售）
   let me=G.players[G.myIdx];
   if(!me.storage[idx])return;
   let usedSlots=me.items.reduce((s,x)=>s+(x?x.size||1:0),0);
   let it=me.storage[idx];
   let wouldMerge=canMergeWith(me,it);
-  if(usedSlots+(it.size||1)>G.maxSlots&&!wouldMerge)return floatMsg('背包已满!','#f44');
+  if(usedSlots+(it.size||1)>G.maxSlots&&!wouldMerge){
+    // 无法移回背包：弹出操作菜单（可出售）
+    let refund=Math.floor((it.cost||3)*0.5*(it.lv||1));
+    showStorageAction(idx,it,refund);
+    return;
+  }
   me.storage.splice(idx,1);
   me.items.push(it);
   floatMsg(it.icon+' → 背包','#4f4');
   // 放回背包后检查合成
   checkMerge(me);
   renderBoard();renderStorage();updateTopBar();
+}
+// 仓库道具操作弹窗（出售）
+function showStorageAction(idx,it,refund){
+  let old=document.getElementById('itemActionPopup');if(old)old.remove();
+  let d=document.createElement('div');d.id='itemActionPopup';
+  d.style.cssText='position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;';
+  d.innerHTML=`<div style="background:rgba(20,20,50,.97);border:2px solid #ffd200;border-radius:14px;padding:20px 24px;text-align:center;min-width:200px;">
+    <div style="font-size:28px;margin-bottom:4px;">${it.icon}</div>
+    <div style="font-size:14px;font-weight:bold;color:#fff;">${it.name} Lv${it.lv||1}</div>
+    <div style="font-size:11px;color:#aaa;margin:6px 0;">${it.desc||''}</div>
+    <div style="font-size:11px;color:#f87;margin:4px 0;">背包已满，无法移回</div>
+    <div style="display:flex;gap:8px;justify-content:center;margin-top:12px;">
+      <button onclick="doSellStorage(${idx})" style="padding:8px 18px;border:none;border-radius:8px;background:#dc2626;color:#fff;font-weight:bold;cursor:pointer;font-size:13px;">💸 出售 (+${refund}💰)</button>
+    </div>
+    <div onclick="closeItemAction()" style="margin-top:10px;font-size:12px;color:#888;cursor:pointer;">取消</div>
+  </div>`;
+  d.addEventListener('click',e=>{if(e.target===d)closeItemAction();});
+  document.body.appendChild(d);
+}
+function doSellStorage(idx){
+  closeItemAction();
+  let me=G.players[G.myIdx];
+  if(!me.storage[idx])return;
+  let it=me.storage[idx];
+  let refund=Math.floor((it.cost||3)*0.5*(it.lv||1));
+  me.gold+=refund;G.gold=me.gold;
+  me.storage.splice(idx,1);
+  renderBoard();renderStorage();updateTopBar();
+  floatMsg('+'+refund+'💰 卖出 '+it.icon+it.name,'#4f4');
 }
 function renderStorage(){
   const c=document.getElementById('storageSlots');c.innerHTML='';
@@ -1138,6 +1227,37 @@ function updateExpandBtn(){
     costText.textContent=cost+'💰';
     btn.className='btnExpand';
   }
+  // 仓库扩充按钮
+  let btn2=document.getElementById('btnExpandStorage');
+  let costText2=document.getElementById('expandStorageCostText');
+  if(btn2&&costText2){
+    if(G.maxStorage>=10){
+      btn2.className='btnExpand maxed';
+      btn2.onclick=null;
+      costText2.textContent='已满';
+    }else{
+      let cost=getExpandStorageCost();
+      costText2.textContent=cost+'💰';
+      btn2.className='btnExpand';
+      btn2.style.background='linear-gradient(135deg,#3b82f6,#60a5fa)';
+    }
+  }
+}
+function getExpandStorageCost(){
+  // 仓库扩充价格：第5格=3, 第6格=5, 第7格=7, 第8格=9, 第9格=12, 第10格=15
+  let expanded=G.maxStorage-4;
+  let costs=[3,5,7,9,12,15];
+  return costs[expanded]||15;
+}
+function expandStorage(){
+  let me=G.players[G.myIdx];
+  if(G.maxStorage>=10)return floatMsg('仓库已达最大!','#888');
+  let cost=getExpandStorageCost();
+  if(me.gold<cost)return floatMsg('金币不足! 需要'+cost+'💰','#f44');
+  me.gold-=cost;G.gold=me.gold;
+  G.maxStorage++;
+  floatMsg('🏪 仓库+1格! ('+G.maxStorage+'/10)','#3b82f6');
+  renderBoard();renderStorage();updateTopBar();updateExpandBtn();
 }
 
 // ============== AI 购物 ==============
@@ -1509,7 +1629,9 @@ function runBattle(me,enemy){
   }
 
   let bL=getBuffs(me),bR=getBuffs(enemy);
-  let maxBHp=120+bL.maxHpBonus;let maxBHpR=120+bR.maxHpBonus;
+  // 战斗HP随回合递增，给护盾/治疗/DOT更多发挥空间
+  let battleBaseHp=Math.min(200,120+(G.round-1)*8);
+  let maxBHp=battleBaseHp+bL.maxHpBonus;let maxBHpR=battleBaseHp+bR.maxHpBonus;
   let hpL=maxBHp,hpR=maxBHpR,shL=0,shR=0;
   let burnL=0,burnR=0,burnDmgL=0,burnDmgR=0;
   let poisonL=0,poisonR=0,poisonDmgL=0,poisonDmgR=0;
@@ -1645,11 +1767,11 @@ function runBattle(me,enemy){
         setTimeout(()=>endBattle(me,enemy,hpL,hpR),600);
         return;
       }
-      // DOT：伤害=每层dmg*dt，层数控制持续时间；衰减0.5/s，上限10层
-      if(burnR>0){hpR-=burnDmgR*dt*Math.min(burnR,3);burnR=Math.max(0,burnR-dt*0.5*bL.dotDecay);}
-      if(burnL>0){hpL-=burnDmgL*dt*Math.min(burnL,3);burnL=Math.max(0,burnL-dt*0.5*bR.dotDecay);}
-      if(poisonR>0){hpR-=poisonDmgR*dt*Math.min(poisonR,3);poisonR=Math.max(0,poisonR-dt*0.5*bL.dotDecay);}
-      if(poisonL>0){hpL-=poisonDmgL*dt*Math.min(poisonL,3);poisonL=Math.max(0,poisonL-dt*0.5*bR.dotDecay);}
+      // DOT：伤害=每层dmg*dt*min(层数,4)，层数控制持续时间；衰减0.5/s，上限10层
+      if(burnR>0){hpR-=burnDmgR*dt*Math.min(burnR,4);burnR=Math.max(0,burnR-dt*0.5*bL.dotDecay);}
+      if(burnL>0){hpL-=burnDmgL*dt*Math.min(burnL,4);burnL=Math.max(0,burnL-dt*0.5*bR.dotDecay);}
+      if(poisonR>0){hpR-=poisonDmgR*dt*Math.min(poisonR,4);poisonR=Math.max(0,poisonR-dt*0.5*bL.dotDecay);}
+      if(poisonL>0){hpL-=poisonDmgL*dt*Math.min(poisonL,4);poisonL=Math.max(0,poisonL-dt*0.5*bR.dotDecay);}
       burnR=Math.min(burnR,10);burnL=Math.min(burnL,10);
       poisonR=Math.min(poisonR,10);poisonL=Math.min(poisonL,10);
       // 自然回复（肉鸽技能）
@@ -1664,11 +1786,11 @@ function runBattle(me,enemy){
         let els=document.querySelectorAll('#leftItems .bItem');
         if(els[i]){let bar=els[i].querySelector('.cdBar');if(bar)bar.style.width=(timerL[i]/cdL[i]*100)+'%';}
         if(timerL[i]>=cdL[i]){
-          timerL[i]=0;let lv=it.lv||1;let lvMul=1+(lv-1)*0.7;let crit=Math.random()<bL.critRate;let cm=crit?bL.critDmg:1;
+          timerL[i]=0;let lv=it.lv||1;let lvMul=1+(lv-1)*0.7;let wpnMul=1+(lv-1)*0.4;let crit=Math.random()<bL.critRate;let cm=crit?bL.critDmg:1;
           // 绝地反击
           let lsMul=(bL.lastStandBoost>0&&hpL<maxBHp*0.25)?(1+bL.lastStandBoost):1;
           if(it.type==='weapon'){
-            let d=it.dmg*bL.dmgMul*lvMul*cm*lsMul;
+            let d=it.dmg*bL.dmgMul*wpnMul*cm*lsMul;
             // 斩杀
             if(bL.executeDmg>0&&hpR<maxBHpR*0.3)d*=(1+bL.executeDmg);
             // 破甲
@@ -1736,10 +1858,10 @@ function runBattle(me,enemy){
         let els=document.querySelectorAll('#rightItems .bItem');
         if(els[i]){let bar=els[i].querySelector('.cdBar');if(bar)bar.style.width=(timerR[i]/cdR[i]*100)+'%';}
         if(timerR[i]>=cdR[i]){
-          timerR[i]=0;let lv=it.lv||1;let lvMul=1+(lv-1)*0.7;let crit=Math.random()<bR.critRate;let cm=crit?bR.critDmg:1;
+          timerR[i]=0;let lv=it.lv||1;let lvMul=1+(lv-1)*0.7;let wpnMul=1+(lv-1)*0.4;let crit=Math.random()<bR.critRate;let cm=crit?bR.critDmg:1;
           let lsMulR=(bR.lastStandBoost>0&&hpR<maxBHpR*0.25)?(1+bR.lastStandBoost):1;
           if(it.type==='weapon'){
-            let d=it.dmg*bR.dmgMul*lvMul*cm*lsMulR;
+            let d=it.dmg*bR.dmgMul*wpnMul*cm*lsMulR;
             if(bR.executeDmg>0&&hpL<maxBHp*0.3)d*=(1+bR.executeDmg);
             if(shL>0){let pen=bR.armorPen||0;let effShield=shL*(1-pen);let ab=Math.min(effShield,d);shL-=ab;d-=ab;}
             d*=bL.damageTaken;
@@ -1916,7 +2038,7 @@ function showResult(won,me,enemy,dmg,hpBefore,battleHpL,battleHpR,endReason){
         <div style="font-size:11px;color:#c8a;margin:4px 0;padding:4px 8px;background:rgba(160,80,200,.12);border-radius:6px;">🏷️ 对手特性: ${enemy.hero.icon} ${enemy.hero.desc}</div>
         ${(me.perks||[]).length>0?`<div style="font-size:10px;color:#ffd200;margin:2px 0;">🎲 我的技能(${me.perks.length}): ${me.perks.map(p=>p.icon).join('')}</div>`:''}
         ${(enemy.perks||[]).length>0?`<div style="font-size:10px;color:#f87;margin:2px 0;">🎲 对手技能(${enemy.perks.length}): ${enemy.perks.map(p=>p.icon).join('')}</div>`:''}
-        <div style="font-size:11px;color:#888;margin:6px 0;padding:6px 8px;background:rgba(0,0,0,.2);border-radius:8px;">💡 每场战斗以120HP对打，${endReason==='timeout'?'时间到按剩余HP判定':'HP归零方'}败。败方扣赛制伤害(第${G.round}回合=${dmg}点)。</div>
+        <div style="font-size:11px;color:#888;margin:6px 0;padding:6px 8px;background:rgba(0,0,0,.2);border-radius:8px;">💡 本场战斗HP=${Math.min(200,120+(G.round-1)*8)}（每回合+8，上限200），${endReason==='timeout'?'时间到按剩余HP判定':'HP归零方'}败。败方扣赛制伤害(第${G.round}回合=${dmg}点)。</div>
         ${contribHtml}
       </div>
     </details>
@@ -2201,6 +2323,14 @@ function updateTopBar(){
   document.getElementById('hpText').textContent=Math.ceil(me.hp);
   document.getElementById('hpText').parentElement.querySelector('.hpVal').style.color=me.hp<30?'#f44':'#4f4';
   document.getElementById('lvlText').textContent='⭐ Lv.'+me.lv+' ('+Math.floor(me.xp)+'/'+me.xpNeed+')';
+  // 战斗HP显示（每回合递增）
+  let bhEl=document.getElementById('battleHpVal');
+  if(bhEl){
+    let bhp=Math.min(200,120+(G.round-1)*8);
+    bhEl.textContent=bhp;
+    let parent=document.getElementById('battleHpInfo');
+    if(parent)parent.title='本场战斗双方各 '+bhp+' HP（每回合+8，上限200）';
+  }
   // 职业特性
   let h=me.hero;
   document.getElementById('heroTrait').innerHTML=h.icon+' '+h.name+' <span style="color:#ccc;font-size:10px;">'+h.desc+'</span>';
@@ -2229,11 +2359,120 @@ function updatePlayersPanel(){
     c.appendChild(d);
   });
 }
+// ============== 图鉴系统 ==============
+function openCodex(tab){
+  tab=tab||'items';
+  const o=document.getElementById('codexOverlay');
+  const b=document.getElementById('codexBox');
+  const rarityColor={common:'#999',rare:'#4d96ff',epic:'#a855f7',legend:'#f59e0b'};
+  const rarityName={common:'普通',rare:'稀有',epic:'史诗',legend:'传说'};
+  const typeColor={weapon:'#f88',shield:'#4df',heal:'#4f4',burn:'#fa0',poison:'#c4f',buff:'#ff0',special:'#c8f'};
+  const typeName={weapon:'⚔️ 武器',shield:'🛡️ 护盾',heal:'💊 治疗',burn:'🔥 灼烧',poison:'☠️ 毒素',buff:'💫 增益',special:'✨ 特殊'};
+  let html='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px;">';
+  html+='<h2 style="color:#4d96ff;font-size:22px;margin:0;">📖 图鉴</h2>';
+  html+='<div style="display:flex;gap:6px;flex-wrap:wrap;">';
+  const tabs=[['items','🎒 道具'],['events','🎲 随机事件'],['heroes','👤 职业'],['perks','✨ 肉鸽技能']];
+  tabs.forEach(([k,label])=>{
+    const active=k===tab;
+    html+=`<button onclick="openCodex('${k}')" style="padding:6px 14px;border-radius:10px;border:2px solid ${active?'#4d96ff':'#333'};background:${active?'rgba(77,150,255,.2)':'rgba(30,30,60,.6)'};color:${active?'#9cc9ff':'#999'};cursor:pointer;font-size:12px;font-weight:bold;">${label}</button>`;
+  });
+  html+='<button onclick="closeCodex()" style="padding:6px 14px;border-radius:10px;border:2px solid #f66;background:rgba(150,30,30,.4);color:#f99;cursor:pointer;font-size:12px;font-weight:bold;">✖ 关闭</button>';
+  html+='</div></div>';
+
+  if(tab==='items'){
+    // 按类型分组
+    const groups={};
+    ITEMS_DB.forEach(it=>{ (groups[it.type]=groups[it.type]||[]).push(it); });
+    const order=['weapon','shield','heal','burn','poison','buff','special'];
+    html+='<div style="font-size:12px;color:#aaa;margin-bottom:10px;">共 '+ITEMS_DB.length+' 件道具 — 鼠标悬停查看详细数值（已按类型分组）</div>';
+    order.forEach(t=>{
+      const list=groups[t]; if(!list||!list.length)return;
+      html+=`<div style="margin:14px 0 8px;font-size:14px;font-weight:bold;color:${typeColor[t]};border-left:3px solid ${typeColor[t]};padding-left:8px;">${typeName[t]||t} (${list.length})</div>`;
+      html+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;">';
+      list.sort((a,b)=>(['common','rare','epic','legend'].indexOf(a.rarity))-(['common','rare','epic','legend'].indexOf(b.rarity))).forEach(it=>{
+        const rc=rarityColor[it.rarity]||'#999';
+        html+=`<div style="padding:10px;border:2px solid ${rc};border-radius:10px;background:rgba(20,20,40,.7);">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+            <span style="font-size:22px;">${it.icon}</span>
+            <span style="font-size:9px;color:${rc};padding:1px 6px;border:1px solid ${rc};border-radius:8px;">${rarityName[it.rarity]}</span>
+          </div>
+          <div style="font-size:13px;font-weight:bold;color:#fff;">${it.name}</div>
+          <div style="font-size:10px;color:#888;margin:2px 0;">💰${it.cost}${it.size>1?' · '+it.size+'格':''}${it.cd?' · CD '+it.cd+'s':''}</div>
+          <div style="font-size:11px;color:#ccc;line-height:1.4;">${it.desc||''}</div>
+        </div>`;
+      });
+      html+='</div>';
+    });
+  }
+  else if(tab==='events'){
+    html+=`<div style="font-size:12px;color:#aaa;margin-bottom:10px;">共 ${EVENTS.length} 个随机事件 — 每 3 回合触发一次</div>`;
+    html+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;">';
+    EVENTS.forEach(ev=>{
+      html+=`<div style="padding:12px;border:2px solid #a855f7;border-radius:12px;background:rgba(60,30,80,.4);">
+        <div style="font-size:15px;font-weight:bold;color:#d8b4fe;margin-bottom:4px;">🎲 ${ev.name}</div>
+        <div style="font-size:11px;color:#bbb;margin-bottom:8px;font-style:italic;">${ev.desc}</div>
+        <div style="display:flex;flex-direction:column;gap:4px;">`;
+      ev.opts.forEach(op=>{
+        html+=`<div style="font-size:11px;padding:4px 8px;border-radius:6px;background:rgba(20,20,40,.6);border-left:2px solid #a855f7;">
+          <div style="color:#fff;font-weight:bold;">▸ ${op.name}</div>
+          <div style="color:#999;font-size:10px;margin-top:1px;">${op.desc}</div>
+        </div>`;
+      });
+      html+='</div></div>';
+    });
+    html+='</div>';
+  }
+  else if(tab==='heroes'){
+    html+=`<div style="font-size:12px;color:#aaa;margin-bottom:10px;">共 ${HEROES.length} 个可选职业</div>`;
+    html+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px;">';
+    HEROES.forEach(h=>{
+      html+=`<div style="padding:12px;border:2px solid #ffd200;border-radius:12px;background:rgba(60,50,20,.4);text-align:center;">
+        <div style="font-size:36px;">${h.icon}</div>
+        <div style="font-size:14px;font-weight:bold;color:#ffd200;margin:4px 0;">${h.name}</div>
+        <div style="font-size:10px;color:#aaa;">初始HP: ${h.baseHp}</div>
+        <div style="font-size:11px;color:#ccc;margin-top:6px;line-height:1.4;">${h.desc}</div>
+      </div>`;
+    });
+    html+='</div>';
+  }
+  else if(tab==='perks'){
+    const catColor={attack:'#f87',defense:'#4f4',support:'#4df'};
+    const catName={attack:'⚔️ 攻击',defense:'🛡️ 防御',support:'💫 辅助'};
+    const byCategory={};
+    PERKS.forEach(p=>(byCategory[p.category]=byCategory[p.category]||[]).push(p));
+    html+=`<div style="font-size:12px;color:#aaa;margin-bottom:10px;">共 ${PERKS.length} 个肉鸽技能 — 每 4 回合 3 选 1</div>`;
+    ['attack','defense','support'].forEach(cat=>{
+      const list=byCategory[cat];if(!list)return;
+      html+=`<div style="margin:14px 0 8px;font-size:14px;font-weight:bold;color:${catColor[cat]};border-left:3px solid ${catColor[cat]};padding-left:8px;">${catName[cat]} (${list.length})</div>`;
+      html+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;">';
+      list.sort((a,b)=>a.tier-b.tier).forEach(p=>{
+        const tierColors={1:'#4ade80',2:'#60a5fa',3:'#c084fc'};
+        const tc=tierColors[p.tier];
+        html+=`<div style="padding:10px;border:2px solid ${tc};border-radius:10px;background:rgba(20,20,40,.7);">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+            <span style="font-size:22px;">${p.icon}</span>
+            <span style="font-size:9px;color:${tc};padding:1px 6px;border:1px solid ${tc};border-radius:8px;">T${p.tier}</span>
+          </div>
+          <div style="font-size:13px;font-weight:bold;color:#fff;">${p.name}</div>
+          <div style="font-size:11px;color:#ccc;line-height:1.4;margin-top:4px;">${p.desc}</div>
+        </div>`;
+      });
+      html+='</div>';
+    });
+  }
+  b.innerHTML=html;
+  o.style.display='block';
+}
+function closeCodex(){
+  const o=document.getElementById('codexOverlay');
+  if(o)o.style.display='none';
+}
+
 function showTooltip(e,it,fromBag){
   const t=document.getElementById('tooltip');
-  let lv=it.lv||1;let lvMul=1+(lv-1)*0.7;
+  let lv=it.lv||1;let lvMul=1+(lv-1)*0.7;let wpnMul=1+(lv-1)*0.4;
   let stats='';
-  if(it.dmg){let val=Math.ceil(it.dmg*lvMul);stats+=`伤害: ${val}${lv>1?' <span style="color:#4f4;">(基础${it.dmg}×${lvMul.toFixed(1)})</span>':''} | CD: ${it.cd}s\n`;}
+  if(it.dmg){let val=Math.ceil(it.dmg*wpnMul);stats+=`伤害: ${val}${lv>1?' <span style="color:#4f4;">(基础${it.dmg}×${wpnMul.toFixed(1)})</span>':''} | CD: ${it.cd}s\n`;}
   if(it.shield){let val=Math.ceil(it.shield*lvMul);stats+=`护盾: ${val}${lv>1?' <span style="color:#4df;">(基础${it.shield}×${lvMul.toFixed(1)})</span>':''} | CD: ${it.cd}s\n`;}
   if(it.heal){let val=Math.ceil(it.heal*lvMul);stats+=`治疗: ${val}${lv>1?' <span style="color:#4f4;">(基础${it.heal}×${lvMul.toFixed(1)})</span>':''} | CD: ${it.cd}s\n`;}
   if(it.burnDmg){let val=Math.ceil(it.burnDmg*lvMul);stats+=`灼烧: ${val}/层${lv>1?' <span style="color:#fa0;">(基础${it.burnDmg}×${lvMul.toFixed(1)})</span>':''} x${it.burnStack}层\n`;}
