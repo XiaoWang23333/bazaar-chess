@@ -175,7 +175,7 @@ canvas#bgCanvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;poi
 .slot.merging{animation:mergeGlow .6s ease-out;}
 .mergeNotice{position:fixed;top:80px;left:50%;transform:translateX(-50%);z-index:250;background:linear-gradient(135deg,rgba(255,210,0,.95),rgba(247,151,30,.95));color:#1a1a2e;padding:10px 28px;border-radius:20px;font-size:16px;font-weight:bold;pointer-events:none;animation:floatUp 1.5s forwards;letter-spacing:1px;}
 /* 合成全屏动画 */
-#mergeOverlay{display:none;position:fixed;inset:0;z-index:240;background:rgba(0,0,0,.6);justify-content:center;align-items:center;flex-direction:column;gap:12px;}
+#mergeOverlay{display:none;position:fixed;inset:0;z-index:240;background:rgba(0,0,0,.6);justify-content:center;align-items:center;flex-direction:column;gap:12px;cursor:pointer;}
 #mergeOverlay.active{display:flex;}
 @keyframes mergeItemFlyL{0%{transform:translateX(-80px) scale(1);opacity:1;}50%{transform:translateX(0) scale(1.2);opacity:1;}100%{transform:translateX(0) scale(0);opacity:0;}}
 @keyframes mergeItemFlyR{0%{transform:translateX(80px) scale(1);opacity:1;}50%{transform:translateX(0) scale(1.2);opacity:1;}100%{transform:translateX(0) scale(0);opacity:0;}}
@@ -521,39 +521,41 @@ const HEROES=[
 ];
 
 const ITEMS_DB=[
-  // 武器类 — DPS: common ~5/s, rare ~8/s, epic ~11/s, legend ~12/s
+  // 武器类（4个: c/r/e/l 各1）— DPS: common ~5, rare ~6.5, epic ~9.5, legend ~10.5
   {id:'dagger',name:'短刀',icon:'🗡️',type:'weapon',rarity:'common',cost:3,cd:1.6,dmg:8,desc:'快速攻击，每1.6s造成8点伤害',size:1},
-  {id:'sword',name:'长剑',icon:'⚔️',type:'weapon',rarity:'common',cost:4,cd:2.2,dmg:11,desc:'每2.2s造成11点伤害',size:1},
   {id:'axe',name:'战斧',icon:'🪓',type:'weapon',rarity:'rare',cost:6,cd:3.0,dmg:20,desc:'猛力一击，每3s造成20点伤害',size:2},
-  {id:'bow',name:'猎弓',icon:'🏹',type:'weapon',rarity:'common',cost:4,cd:1.8,dmg:10,desc:'远程攻击每1.8s造成10点伤害',size:1},
-  {id:'staff',name:'法杖',icon:'🪄',type:'weapon',rarity:'rare',cost:7,cd:2.8,dmg:17,desc:'魔法打击每2.8s造成17点伤害',size:2},
   {id:'hammer',name:'雷霆锤',icon:'🔨',type:'weapon',rarity:'epic',cost:10,cd:3.6,dmg:32,desc:'电击每3.6s造成32点伤害',size:2},
   {id:'scythe',name:'死神镰',icon:'⚰️',type:'weapon',rarity:'legend',cost:15,cd:3.4,dmg:34,desc:'每3.4s造成34伤害+12%吸血',size:3,lifesteal:0.12},
-  {id:'cannon',name:'火炮',icon:'💣',type:'weapon',rarity:'epic',cost:11,cd:4.4,dmg:40,desc:'每4.4s轰击40点伤害',size:3},
-  // 防御类 — 护盾: common ~4/s, rare ~6/s, epic ~9/s（约武器DPS的70-80%）
+  // 护盾类（4个）
   {id:'shield_s',name:'木盾',icon:'🛡️',type:'shield',rarity:'common',cost:3,cd:3.0,shield:13,desc:'每3s产生13点护盾',size:1},
   {id:'shield_m',name:'铁盾',icon:'🛡️',type:'shield',rarity:'rare',cost:6,cd:3.5,shield:23,desc:'每3.5s产生23点护盾',size:2},
   {id:'shield_l',name:'圣光盾',icon:'✨',type:'shield',rarity:'epic',cost:10,cd:4.0,shield:36,desc:'每4s产生36点护盾',size:2},
-  // 治疗类 — common ~3.5/s, rare ~6/s, legend ~9/s（约武器DPS的60-75%）
+  {id:'aegis_divine',name:'神圣庇护',icon:'🕊️',type:'shield',rarity:'legend',cost:15,cd:4.5,shield:52,desc:'每4.5s产生52点护盾+开场护盾20',size:2,startShield:20},
+  // 治疗类（4个）
   {id:'potion',name:'药水',icon:'🧪',type:'heal',rarity:'common',cost:3,cd:3.0,heal:11,desc:'每3s恢复11点生命',size:1},
   {id:'herb',name:'仙草',icon:'🌿',type:'heal',rarity:'rare',cost:5,cd:3.5,heal:21,desc:'每3.5s恢复21点生命',size:1},
+  {id:'lifeStone',name:'生命宝石',icon:'💎',type:'heal',rarity:'epic',cost:9,cd:4.0,heal:30,desc:'每4s恢复30点生命',size:2},
   {id:'grail',name:'圣杯',icon:'🏆',type:'heal',rarity:'legend',cost:14,cd:4.5,heal:40,desc:'每4.5s恢复40点生命',size:2},
-  // DOT类 — 叠层略增强
+  // 灼烧类（4个）
   {id:'torch',name:'火把',icon:'🔥',type:'burn',rarity:'common',cost:3,cd:2.4,burnDmg:5,burnStack:2,desc:'每2.4s叠2层灼烧(5/层/s)',size:1},
   {id:'bomb',name:'燃烧弹',icon:'💥',type:'burn',rarity:'rare',cost:6,cd:2.8,burnDmg:6,burnStack:3,desc:'每2.8s叠3层灼烧(6/层/s)',size:2},
+  {id:'pyreflame',name:'业火咒',icon:'🌋',type:'burn',rarity:'epic',cost:10,cd:3.0,burnDmg:8,burnStack:3,desc:'每3s叠3层灼烧(8/层/s)',size:2},
+  {id:'phoenix',name:'凤凰之焰',icon:'🦅',type:'burn',rarity:'legend',cost:14,cd:3.2,burnDmg:10,burnStack:4,desc:'每3.2s叠4层灼烧(10/层/s)',size:2},
+  // 毒素类（4个）
   {id:'vial',name:'毒瓶',icon:'☠️',type:'poison',rarity:'common',cost:4,cd:2.6,poisonDmg:6,poisonStack:2,desc:'每2.6s叠2层毒素(6/层/s)无视护盾',size:1},
   {id:'cobra',name:'毒蛇',icon:'🐍',type:'poison',rarity:'rare',cost:7,cd:2.6,poisonDmg:7,poisonStack:3,desc:'每2.6s叠3层毒(7/层/s)无视护盾',size:2},
-  // 增益类 — 暴击削弱，其他微调
+  {id:'venom_fang',name:'毒龙牙',icon:'🦂',type:'poison',rarity:'epic',cost:10,cd:2.8,poisonDmg:9,poisonStack:3,desc:'每2.8s叠3层毒(9/层/s)无视护盾',size:2},
+  {id:'plague',name:'瘟疫源',icon:'🦠',type:'poison',rarity:'legend',cost:14,cd:3.0,poisonDmg:11,poisonStack:4,desc:'每3s叠4层毒(11/层/s)无视护盾',size:2},
+  // 增益类（4个）
+  {id:'boots',name:'迅捷靴',icon:'👢',type:'buff',rarity:'common',cost:4,cd:0,buffType:'hasteAll',buffVal:0.06,desc:'所有物品冷却-6%',size:1},
   {id:'ring',name:'力量戒指',icon:'💍',type:'buff',rarity:'rare',cost:5,cd:0,buffType:'dmgUp',buffVal:0.10,desc:'所有武器伤害+10%',size:1},
-  {id:'cloak',name:'疾风斗篷',icon:'🧣',type:'buff',rarity:'rare',cost:6,cd:0,buffType:'hasteAll',buffVal:0.10,desc:'所有物品冷却-10%',size:1},
   {id:'amulet',name:'暴击护符',icon:'📿',type:'buff',rarity:'epic',cost:8,cd:0,buffType:'crit',buffVal:0.08,desc:'暴击率+8%，暴击伤害x2',size:1},
   {id:'crown',name:'国王皇冠',icon:'👑',type:'buff',rarity:'legend',cost:16,cd:0,buffType:'allBoost',buffVal:0.18,desc:'所有效果+18%',size:2},
-  {id:'boots',name:'迅捷靴',icon:'👢',type:'buff',rarity:'common',cost:4,cd:0,buffType:'hasteAll',buffVal:0.06,desc:'所有物品冷却-6%',size:1},
-  {id:'mirror',name:'反射镜',icon:'🪞',type:'special',rarity:'epic',cost:9,cd:5.0,reflectPct:0.25,desc:'每5s反弹所受25%伤害',size:2},
-  {id:'hourglass',name:'时光沙漏',icon:'⏳',type:'special',rarity:'legend',cost:13,cd:8.0,freezeTime:1.5,desc:'每8s冻结对手物品1.5s',size:2},
-  {id:'remoteBomb',name:'遥控炸弹',icon:'🧨',type:'special',rarity:'epic',cost:9,cd:0,remoteDmg:25,remoteShieldBreak:0.6,desc:'点击引爆!摧毁60%护盾+25伤害(每场1次)',size:2},
+  // 特殊类（4个）
+  {id:'spikes',name:'尖刺',icon:'🌵',type:'special',rarity:'common',cost:3,cd:0,thornsBonus:0.05,desc:'反弹5%受到的伤害(被动)',size:1},
   {id:'wallBreaker',name:'攻城锤',icon:'🏗️',type:'special',rarity:'rare',cost:7,cd:6.0,wallBreakPct:0.5,desc:'每6s摧毁对手50%护盾(纯破甲不伤血)',size:2},
-  {id:'corrosion',name:'腐蚀瓶',icon:'🫧',type:'special',rarity:'epic',cost:10,cd:7.0,healReduce:0.5,desc:'每7s使对手治疗效果降低50%持续3s',size:2},
+  {id:'remoteBomb',name:'遥控炸弹',icon:'🧨',type:'special',rarity:'epic',cost:9,cd:0,remoteDmg:25,remoteShieldBreak:0.6,desc:'点击引爆!摧毁60%护盾+25伤害(每场1次)',size:2},
+  {id:'hourglass',name:'时光沙漏',icon:'⏳',type:'special',rarity:'legend',cost:13,cd:8.0,freezeTime:1.5,desc:'每8s冻结对手物品1.5s',size:2},
 ];
 
 const EVENTS=[
@@ -924,32 +926,41 @@ function checkMerge(player){
     playMergeAnimations();
   }
 }
-let mergeAnimPlaying=false;
+let mergeAnimActive=false;
+let mergeAnimEndAt=0; // 当前动画应该结束的时间戳，兜底用
 function playMergeAnimations(){
-  // 加锁：_playNextMergeAnim 会持续消费队列直到空，无需外部重复触发
-  if(mergeAnimPlaying)return;
+  if(mergeAnimActive)return;
   if(mergeQueue.length===0)return;
-  mergeAnimPlaying=true;
   _playNextMergeAnim();
 }
 function _playNextMergeAnim(){
   if(mergeQueue.length===0){
-    mergeAnimPlaying=false;
+    mergeAnimActive=false;
+    mergeAnimEndAt=0;
+    _hideMergeOverlay();
     return;
   }
-  let info=mergeQueue.shift();
-  showMergeAnimation(info,()=>{
+  mergeAnimActive=true;
+  const info=mergeQueue.shift();
+  _renderMergeOverlay(info);
+  mergeAnimEndAt=Date.now()+1500;
+  setTimeout(()=>{
+    // 动画结束：渲染并递归播下一条
     renderBoard();renderStorage();updateTopBar();
-    // 继续下一个（即使队列期间被 push 新项也能处理）
-    setTimeout(_playNextMergeAnim,200);
-  });
+    setTimeout(_playNextMergeAnim,150);
+  },1500);
 }
-function showMergeAnimation(info,onDone){
+function _hideMergeOverlay(){
   const overlay=document.getElementById('mergeOverlay');
-  // 兜底：强制清除任何残留状态
+  if(!overlay)return;
+  overlay.style.display='none';
+  overlay.className='';
+  overlay.innerHTML='';
+}
+function _renderMergeOverlay(info){
+  const overlay=document.getElementById('mergeOverlay');
   overlay.className='active';
   overlay.style.display='flex';
-  // 构建动画HTML
   let starsHtml='';
   for(let i=0;i<12;i++){
     let angle=Math.random()*Math.PI*2;
@@ -969,19 +980,54 @@ function showMergeAnimation(info,onDone){
     </div>
     <div class="mergeResultItem">${info.resultItem.icon}</div>
     <div class="mergeResultName">⚡ ${info.name} Lv${info.oldLv} → Lv${info.newLv}</div>
+    <div style="font-size:11px;color:#888;margin-top:8px;">点击任意位置跳过</div>
   `;
-  // 1.5秒后自动关闭
-  let done=false;
-  const finish=()=>{
-    if(done)return;done=true;
-    overlay.style.display='none';
-    overlay.className='';
-    overlay.innerHTML='';
-    if(onDone)onDone();
+}
+// 点击遮罩跳过当前动画
+(function initMergeOverlayClick(){
+  const tryBind=()=>{
+    const o=document.getElementById('mergeOverlay');
+    if(!o)return setTimeout(tryBind,200);
+    o.addEventListener('click',()=>{
+      if(!mergeAnimActive)return;
+      // 直接继续下一条（不等 1.5s）
+      mergeAnimActive=false;
+      mergeAnimEndAt=0;
+      renderBoard();renderStorage();updateTopBar();
+      _hideMergeOverlay();
+      if(mergeQueue.length>0){
+        setTimeout(_playNextMergeAnim,50);
+      }
+    });
   };
-  setTimeout(finish,1600);
-  // 双保险：2.5秒后也强制清理（应对切换tab等setTimeout被节流）
-  setTimeout(()=>{if(!done){finish();}},2500);
+  tryBind();
+})();
+// 全局守护：每 500ms 检查状态
+setInterval(()=>{
+  const o=document.getElementById('mergeOverlay');
+  if(!o)return;
+  // 死锁自救：标记 active 但超过 3 秒没结束 → 强制复位
+  if(mergeAnimActive&&mergeAnimEndAt>0&&Date.now()>mergeAnimEndAt+1500){
+    console.warn('[合成动画] 检测到卡死，强制复位');
+    mergeAnimActive=false;
+    mergeAnimEndAt=0;
+    _hideMergeOverlay();
+    if(mergeQueue.length>0)_playNextMergeAnim();
+    return;
+  }
+  // 遮罩显示但没在播 & 无队列 → 关闭
+  if(o.style.display==='flex'&&!mergeAnimActive&&mergeQueue.length===0){
+    _hideMergeOverlay();
+  }
+  // 队列有东西但没在播 → 启动
+  if(!mergeAnimActive&&mergeQueue.length>0){
+    _playNextMergeAnim();
+  }
+},500);
+// 保留 showMergeAnimation 兼容其他调用
+function showMergeAnimation(info,onDone){
+  _renderMergeOverlay(info);
+  setTimeout(()=>{_hideMergeOverlay();if(onDone)onDone();},1500);
 }
 function showMergeNotice(item){
   // 保留简单提示备用（AI用）
@@ -1633,6 +1679,12 @@ function runBattle(me,enemy){
   let battleBaseHp=Math.min(200,120+(G.round-1)*8);
   let maxBHp=battleBaseHp+bL.maxHpBonus;let maxBHpR=battleBaseHp+bR.maxHpBonus;
   let hpL=maxBHp,hpR=maxBHpR,shL=0,shR=0;
+  // 应用初始护盾（神圣庇护等）
+  me.items.forEach(it=>{if(it&&it.startShield){let lv=it.lv||1;shL+=it.startShield*(1+(lv-1)*0.7);}});
+  enemy.items.forEach(it=>{if(it&&it.startShield){let lv=it.lv||1;shR+=it.startShield*(1+(lv-1)*0.7);}});
+  // 累加 thornsBonus（尖刺等被动）到 thornsPct
+  me.items.forEach(it=>{if(it&&it.thornsBonus){let lv=it.lv||1;bL.thornsPct+=it.thornsBonus*(1+(lv-1)*0.5);}});
+  enemy.items.forEach(it=>{if(it&&it.thornsBonus){let lv=it.lv||1;bR.thornsPct+=it.thornsBonus*(1+(lv-1)*0.5);}});
   let burnL=0,burnR=0,burnDmgL=0,burnDmgR=0;
   let poisonL=0,poisonR=0,poisonDmgL=0,poisonDmgR=0;
 
@@ -2474,6 +2526,8 @@ function showTooltip(e,it,fromBag){
   let stats='';
   if(it.dmg){let val=Math.ceil(it.dmg*wpnMul);stats+=`伤害: ${val}${lv>1?' <span style="color:#4f4;">(基础${it.dmg}×${wpnMul.toFixed(1)})</span>':''} | CD: ${it.cd}s\n`;}
   if(it.shield){let val=Math.ceil(it.shield*lvMul);stats+=`护盾: ${val}${lv>1?' <span style="color:#4df;">(基础${it.shield}×${lvMul.toFixed(1)})</span>':''} | CD: ${it.cd}s\n`;}
+  if(it.startShield){let val=Math.ceil(it.startShield*lvMul);stats+=`<span style="color:#9cc9ff;">🕊️ 开场护盾: ${val}</span>${lv>1?' <span style="color:#4df;">(基础${it.startShield}×${lvMul.toFixed(1)})</span>':''}\n`;}
+  if(it.thornsBonus){let val=(it.thornsBonus*(1+(lv-1)*0.5)*100).toFixed(0);stats+=`<span style="color:#4f4;">🌵 反弹: ${val}% 受伤</span>(被动)\n`;}
   if(it.heal){let val=Math.ceil(it.heal*lvMul);stats+=`治疗: ${val}${lv>1?' <span style="color:#4f4;">(基础${it.heal}×${lvMul.toFixed(1)})</span>':''} | CD: ${it.cd}s\n`;}
   if(it.burnDmg){let val=Math.ceil(it.burnDmg*lvMul);stats+=`灼烧: ${val}/层${lv>1?' <span style="color:#fa0;">(基础${it.burnDmg}×${lvMul.toFixed(1)})</span>':''} x${it.burnStack}层\n`;}
   if(it.poisonDmg){let val=Math.ceil(it.poisonDmg*lvMul);stats+=`毒素: ${val}/层${lv>1?' <span style="color:#c4f;">(基础${it.poisonDmg}×${lvMul.toFixed(1)})</span>':''} x${it.poisonStack}层\n`;}
