@@ -521,41 +521,69 @@ const HEROES=[
 ];
 
 const ITEMS_DB=[
-  // 武器类（4个: c/r/e/l 各1）— DPS: common ~5, rare ~6.5, epic ~9.5, legend ~10.5
+  // 武器类（8个: c×2, r×2, e×2, l×2）
   {id:'dagger',name:'短刀',icon:'🗡️',type:'weapon',rarity:'common',cost:3,cd:1.6,dmg:8,desc:'快速攻击，每1.6s造成8点伤害',size:1},
+  {id:'sword',name:'长剑',icon:'⚔️',type:'weapon',rarity:'common',cost:4,cd:2.2,dmg:11,desc:'每2.2s造成11点伤害',size:1},
   {id:'axe',name:'战斧',icon:'🪓',type:'weapon',rarity:'rare',cost:6,cd:3.0,dmg:20,desc:'猛力一击，每3s造成20点伤害',size:2},
+  {id:'bow',name:'猎弓',icon:'🏹',type:'weapon',rarity:'rare',cost:6,cd:2.0,dmg:13,desc:'远程攻击每2s造成13点伤害',size:1},
   {id:'hammer',name:'雷霆锤',icon:'🔨',type:'weapon',rarity:'epic',cost:10,cd:3.6,dmg:32,desc:'电击每3.6s造成32点伤害',size:2},
+  {id:'staff',name:'法杖',icon:'🪄',type:'weapon',rarity:'epic',cost:10,cd:2.8,dmg:26,desc:'魔法打击每2.8s造成26点伤害',size:2},
   {id:'scythe',name:'死神镰',icon:'⚰️',type:'weapon',rarity:'legend',cost:15,cd:3.4,dmg:34,desc:'每3.4s造成34伤害+12%吸血',size:3,lifesteal:0.12},
-  // 护盾类（4个）
+  {id:'cannon',name:'火炮',icon:'💣',type:'weapon',rarity:'legend',cost:15,cd:4.4,dmg:44,desc:'每4.4s轰击44点伤害',size:3},
+  // 护盾类（8个）
   {id:'shield_s',name:'木盾',icon:'🛡️',type:'shield',rarity:'common',cost:3,cd:3.0,shield:13,desc:'每3s产生13点护盾',size:1},
+  {id:'buckler',name:'圆盾',icon:'🟢',type:'shield',rarity:'common',cost:3,cd:2.5,shield:10,desc:'每2.5s产生10点护盾(快速)',size:1},
   {id:'shield_m',name:'铁盾',icon:'🛡️',type:'shield',rarity:'rare',cost:6,cd:3.5,shield:23,desc:'每3.5s产生23点护盾',size:2},
+  {id:'tower_shield',name:'塔盾',icon:'🔰',type:'shield',rarity:'rare',cost:6,cd:4.0,shield:27,desc:'每4s产生27点厚重护盾',size:2},
   {id:'shield_l',name:'圣光盾',icon:'✨',type:'shield',rarity:'epic',cost:10,cd:4.0,shield:36,desc:'每4s产生36点护盾',size:2},
+  {id:'rune_shield',name:'符文盾',icon:'🔮',type:'shield',rarity:'epic',cost:10,cd:3.5,shield:30,desc:'每3.5s产生30点护盾(频繁)',size:2},
   {id:'aegis_divine',name:'神圣庇护',icon:'🕊️',type:'shield',rarity:'legend',cost:15,cd:4.5,shield:52,desc:'每4.5s产生52点护盾+开场护盾20',size:2,startShield:20},
-  // 治疗类（4个）
+  {id:'dragon_scale',name:'龙鳞盾',icon:'🐉',type:'shield',rarity:'legend',cost:15,cd:4.0,shield:44,desc:'每4s产生44点护盾+开场护盾30',size:2,startShield:30},
+  // 治疗类（8个）
   {id:'potion',name:'药水',icon:'🧪',type:'heal',rarity:'common',cost:3,cd:3.0,heal:11,desc:'每3s恢复11点生命',size:1},
+  {id:'bandage',name:'绷带',icon:'🩹',type:'heal',rarity:'common',cost:3,cd:2.0,heal:7,desc:'每2s恢复7点生命(快速)',size:1},
   {id:'herb',name:'仙草',icon:'🌿',type:'heal',rarity:'rare',cost:5,cd:3.5,heal:21,desc:'每3.5s恢复21点生命',size:1},
+  {id:'nectar',name:'甘露',icon:'🌺',type:'heal',rarity:'rare',cost:6,cd:2.5,heal:15,desc:'每2.5s恢复15点生命(频繁)',size:1},
   {id:'lifeStone',name:'生命宝石',icon:'💎',type:'heal',rarity:'epic',cost:9,cd:4.0,heal:30,desc:'每4s恢复30点生命',size:2},
+  {id:'angelFeather',name:'天使羽毛',icon:'🪶',type:'heal',rarity:'epic',cost:9,cd:3.0,heal:22,desc:'每3s恢复22点生命(灵动)',size:2},
   {id:'grail',name:'圣杯',icon:'🏆',type:'heal',rarity:'legend',cost:14,cd:4.5,heal:40,desc:'每4.5s恢复40点生命',size:2},
-  // 灼烧类（4个）
+  {id:'lifeTree',name:'生命之树',icon:'🌳',type:'heal',rarity:'legend',cost:14,cd:3.5,heal:30,desc:'每3.5s恢复30点生命(持续)',size:2},
+  // 灼烧类（8个）
   {id:'torch',name:'火把',icon:'🔥',type:'burn',rarity:'common',cost:3,cd:2.4,burnDmg:5,burnStack:2,desc:'每2.4s叠2层灼烧(5/层/s)',size:1},
+  {id:'oilflask',name:'火油瓶',icon:'🛢️',type:'burn',rarity:'common',cost:3,cd:3.0,burnDmg:6,burnStack:2,desc:'每3s叠2层灼烧(6/层/s)',size:1},
   {id:'bomb',name:'燃烧弹',icon:'💥',type:'burn',rarity:'rare',cost:6,cd:2.8,burnDmg:6,burnStack:3,desc:'每2.8s叠3层灼烧(6/层/s)',size:2},
+  {id:'flameArrow',name:'烈焰箭',icon:'🎯',type:'burn',rarity:'rare',cost:6,cd:2.2,burnDmg:5,burnStack:3,desc:'每2.2s叠3层灼烧(5/层/s)',size:1},
   {id:'pyreflame',name:'业火咒',icon:'🌋',type:'burn',rarity:'epic',cost:10,cd:3.0,burnDmg:8,burnStack:3,desc:'每3s叠3层灼烧(8/层/s)',size:2},
+  {id:'infernoBook',name:'炼狱之书',icon:'📕',type:'burn',rarity:'epic',cost:10,cd:2.6,burnDmg:7,burnStack:3,desc:'每2.6s叠3层灼烧(7/层/s)',size:2},
   {id:'phoenix',name:'凤凰之焰',icon:'🦅',type:'burn',rarity:'legend',cost:14,cd:3.2,burnDmg:10,burnStack:4,desc:'每3.2s叠4层灼烧(10/层/s)',size:2},
-  // 毒素类（4个）
+  {id:'solarFlare',name:'太阳耀斑',icon:'☀️',type:'burn',rarity:'legend',cost:14,cd:2.8,burnDmg:9,burnStack:4,desc:'每2.8s叠4层灼烧(9/层/s)',size:2},
+  // 毒素类（8个）
   {id:'vial',name:'毒瓶',icon:'☠️',type:'poison',rarity:'common',cost:4,cd:2.6,poisonDmg:6,poisonStack:2,desc:'每2.6s叠2层毒素(6/层/s)无视护盾',size:1},
+  {id:'toxicDart',name:'毒镖',icon:'📍',type:'poison',rarity:'common',cost:3,cd:2.0,poisonDmg:5,poisonStack:2,desc:'每2s叠2层毒(5/层/s)无视护盾',size:1},
   {id:'cobra',name:'毒蛇',icon:'🐍',type:'poison',rarity:'rare',cost:7,cd:2.6,poisonDmg:7,poisonStack:3,desc:'每2.6s叠3层毒(7/层/s)无视护盾',size:2},
+  {id:'spider',name:'剧毒蛛',icon:'🕷️',type:'poison',rarity:'rare',cost:6,cd:2.2,poisonDmg:6,poisonStack:3,desc:'每2.2s叠3层毒(6/层/s)无视护盾',size:1},
   {id:'venom_fang',name:'毒龙牙',icon:'🦂',type:'poison',rarity:'epic',cost:10,cd:2.8,poisonDmg:9,poisonStack:3,desc:'每2.8s叠3层毒(9/层/s)无视护盾',size:2},
+  {id:'miasma',name:'瘴气',icon:'💨',type:'poison',rarity:'epic',cost:10,cd:2.4,poisonDmg:8,poisonStack:3,desc:'每2.4s叠3层毒(8/层/s)无视护盾',size:2},
   {id:'plague',name:'瘟疫源',icon:'🦠',type:'poison',rarity:'legend',cost:14,cd:3.0,poisonDmg:11,poisonStack:4,desc:'每3s叠4层毒(11/层/s)无视护盾',size:2},
-  // 增益类（4个）
+  {id:'deathMist',name:'死亡之雾',icon:'🌫️',type:'poison',rarity:'legend',cost:14,cd:2.6,poisonDmg:10,poisonStack:4,desc:'每2.6s叠4层毒(10/层/s)无视护盾',size:2},
+  // 增益类（8个）
   {id:'boots',name:'迅捷靴',icon:'👢',type:'buff',rarity:'common',cost:4,cd:0,buffType:'hasteAll',buffVal:0.06,desc:'所有物品冷却-6%',size:1},
+  {id:'gloves',name:'训练手套',icon:'🧤',type:'buff',rarity:'common',cost:4,cd:0,buffType:'dmgUp',buffVal:0.05,desc:'所有武器伤害+5%',size:1},
   {id:'ring',name:'力量戒指',icon:'💍',type:'buff',rarity:'rare',cost:5,cd:0,buffType:'dmgUp',buffVal:0.10,desc:'所有武器伤害+10%',size:1},
+  {id:'cloak',name:'疾风斗篷',icon:'🧣',type:'buff',rarity:'rare',cost:6,cd:0,buffType:'hasteAll',buffVal:0.10,desc:'所有物品冷却-10%',size:1},
   {id:'amulet',name:'暴击护符',icon:'📿',type:'buff',rarity:'epic',cost:8,cd:0,buffType:'crit',buffVal:0.08,desc:'暴击率+8%，暴击伤害x2',size:1},
+  {id:'orb',name:'能量宝珠',icon:'🌐',type:'buff',rarity:'epic',cost:8,cd:0,buffType:'dmgUp',buffVal:0.18,desc:'所有武器伤害+18%',size:1},
   {id:'crown',name:'国王皇冠',icon:'👑',type:'buff',rarity:'legend',cost:16,cd:0,buffType:'allBoost',buffVal:0.18,desc:'所有效果+18%',size:2},
-  // 特殊类（4个）
+  {id:'starCloak',name:'星辰披风',icon:'🌟',type:'buff',rarity:'legend',cost:15,cd:0,buffType:'hasteAll',buffVal:0.22,desc:'所有物品冷却-22%',size:2},
+  // 特殊类（8个）
   {id:'spikes',name:'尖刺',icon:'🌵',type:'special',rarity:'common',cost:3,cd:0,thornsBonus:0.05,desc:'反弹5%受到的伤害(被动)',size:1},
+  {id:'luckyCoin',name:'幸运币',icon:'🪙',type:'special',rarity:'common',cost:3,cd:0,startShield:10,desc:'开场获得10点护盾',size:1},
   {id:'wallBreaker',name:'攻城锤',icon:'🏗️',type:'special',rarity:'rare',cost:7,cd:6.0,wallBreakPct:0.5,desc:'每6s摧毁对手50%护盾(纯破甲不伤血)',size:2},
+  {id:'corrosion',name:'腐蚀瓶',icon:'🫧',type:'special',rarity:'rare',cost:7,cd:7.0,healReduce:0.5,desc:'每7s使对手治疗降低50%持续3s',size:2},
   {id:'remoteBomb',name:'遥控炸弹',icon:'🧨',type:'special',rarity:'epic',cost:9,cd:0,remoteDmg:25,remoteShieldBreak:0.6,desc:'点击引爆!摧毁60%护盾+25伤害(每场1次)',size:2},
+  {id:'mirror',name:'反射镜',icon:'🪞',type:'special',rarity:'epic',cost:9,cd:5.0,reflectPct:0.25,desc:'每5s反弹所受25%伤害',size:2},
   {id:'hourglass',name:'时光沙漏',icon:'⏳',type:'special',rarity:'legend',cost:13,cd:8.0,freezeTime:1.5,desc:'每8s冻结对手物品1.5s',size:2},
+  {id:'divineJudgment',name:'神之裁决',icon:'⚡',type:'special',rarity:'legend',cost:14,cd:10.0,siegeDmg:60,desc:'每10s造成60点无视护盾的雷电伤害',size:2},
 ];
 
 const EVENTS=[
@@ -705,6 +733,10 @@ function startGame(){
   G.myIdx=0;
   const myHp=customHp>0?customHp:G.myHero.baseHp;
   G.players.push({name:'我 ('+G.myHero.name+')',hero:G.myHero,hp:myHp,maxHp:myHp,gold:6,items:[],storage:[],perks:[],alive:true,wins:0,losses:0,ai:false,lv:1,xp:0,xpNeed:2});
+  // AI 流派偏好：根据英雄特性倾斜，否则随机
+  const AI_PLAYSTYLES=['physics','physics','poison','burn','tank','balance','crit'];
+  // 打乱
+  const shuffledStyles=AI_PLAYSTYLES.slice().sort(()=>Math.random()-0.5);
   for(let i=0;i<7;i++){
     let h=HEROES[Math.floor(Math.random()*HEROES.length)];
     // 困难模式：AI战斗HP+10、起始随机1个tier1技能
@@ -715,7 +747,14 @@ function startGame(){
       let t1=PERKS.filter(p=>p.tier===1);
       startPerks.push({...t1[Math.floor(Math.random()*t1.length)]});
     }
-    G.players.push({name:AI_NAMES[i]+' ('+h.name+')',hero:h,hp:aiMaxHp,maxHp:aiMaxHp,gold:6,items:[],storage:[],perks:startPerks,alive:true,wins:0,losses:0,ai:true,lv:1,xp:0,xpNeed:2,aiSlots:4});
+    // 根据英雄被动推断流派偏好（覆盖随机）
+    let playstyle=shuffledStyles[i];
+    if(h.passive==='weaponDmg')playstyle='physics';
+    else if(h.passive==='dotBoost')playstyle=Math.random()<0.5?'poison':'burn';
+    else if(h.passive==='healBoost')playstyle='tank';
+    else if(h.passive==='shieldBoost')playstyle='tank';
+    else if(h.passive==='critBoost')playstyle='crit';
+    G.players.push({name:AI_NAMES[i]+' ('+h.name+')',hero:h,hp:aiMaxHp,maxHp:aiMaxHp,gold:6,items:[],storage:[],perks:startPerks,alive:true,wins:0,losses:0,ai:true,lv:1,xp:0,xpNeed:2,aiSlots:4,aiStyle:playstyle});
   }
   G.round=0;G.elimOrder=[];
   // 顶部栏显示难度徽章
@@ -1322,6 +1361,8 @@ function aiAnalyzeEnemyShield(){
   return count>0?avgShieldPower/count:0;
 }
 function aiShop(p){
+  // 设置当前 AI 的流派偏好（影响 aiItemPower 打分）
+  _aiCurStyle=p.aiStyle||'balance';
   // AI格子持久化
   if(!p.aiSlots)p.aiSlots=4;
   let aiMaxSlots=p.aiSlots;
@@ -1423,26 +1464,46 @@ function aiShop(p){
       if(wb.length>0)pick=wb.reduce((a,b)=>aiItemPower(a)>aiItemPower(b)?a:b,wb[0]);
     }
 
-    // 优先级4: 阵容配比
+    // 优先级4: 阵容配比（按流派动态）
     if(!pick){
-      if(hasWeapon===0){
-        let w=affordable.filter(x=>x.type==='weapon');
-        if(w.length>0)pick=w.reduce((a,b)=>aiItemPower(a)>aiItemPower(b)?a:b,w[0]);
-      }else if(hasShield===0&&hasWeapon>=1){
-        let d=affordable.filter(x=>x.type==='shield');
-        if(d.length>0)pick=d.reduce((a,b)=>aiItemPower(a)>aiItemPower(b)?a:b,d[0]);
-      }else if(hasHeal===0&&hasWeapon>=1){
-        let h=affordable.filter(x=>x.type==='heal');
-        if(h.length>0)pick=h.reduce((a,b)=>aiItemPower(a)>aiItemPower(b)?a:b,h[0]);
-      }else if(hasBuff===0&&hasWeapon>=1){
-        let bf=affordable.filter(x=>x.type==='buff');
-        if(bf.length>0)pick=bf.reduce((a,c)=>aiItemPower(a)>aiItemPower(c)?a:c,bf[0]);
-      }else if(hasWeapon<3){
-        let w=affordable.filter(x=>x.type==='weapon');
-        if(w.length>0)pick=w.reduce((a,b)=>aiItemPower(a)>aiItemPower(b)?a:b,w[0]);
-      }else if(hasDot===0){
-        let d=affordable.filter(x=>x.type==='burn'||x.type==='poison');
-        if(d.length>0)pick=d.reduce((a,b)=>aiItemPower(a)>aiItemPower(b)?a:b,d[0]);
+      const st=p.aiStyle||'balance';
+      // 各流派的"核心类型"
+      const coreType=
+        st==='poison'?'poison':
+        st==='burn'?'burn':
+        st==='tank'?'shield':
+        st==='crit'?'weapon':
+        st==='physics'?'weapon':
+        null;
+      // 步骤1: 没有核心类型道具 → 优先买
+      if(coreType){
+        const coreCount=p.items.filter(it=>it&&it.type===coreType).length;
+        if(coreCount===0){
+          let w=affordable.filter(x=>x.type===coreType);
+          if(w.length>0)pick=w.reduce((a,b)=>aiItemPower(a)>aiItemPower(b)?a:b,w[0]);
+        }
+      }
+      // 步骤2: 基础搭配检查
+      if(!pick){
+        if(hasWeapon===0&&st!=='tank'){
+          let w=affordable.filter(x=>x.type==='weapon');
+          if(w.length>0)pick=w.reduce((a,b)=>aiItemPower(a)>aiItemPower(b)?a:b,w[0]);
+        }else if(hasShield===0&&(hasWeapon>=1||st==='tank')){
+          let d=affordable.filter(x=>x.type==='shield');
+          if(d.length>0)pick=d.reduce((a,b)=>aiItemPower(a)>aiItemPower(b)?a:b,d[0]);
+        }else if(hasHeal===0&&hasWeapon>=1){
+          let h=affordable.filter(x=>x.type==='heal');
+          if(h.length>0)pick=h.reduce((a,b)=>aiItemPower(a)>aiItemPower(b)?a:b,h[0]);
+        }else if(hasBuff===0&&hasWeapon>=1){
+          let bf=affordable.filter(x=>x.type==='buff');
+          if(bf.length>0)pick=bf.reduce((a,c)=>aiItemPower(a)>aiItemPower(c)?a:c,bf[0]);
+        }else if(hasWeapon<3&&(st==='physics'||st==='crit')){
+          let w=affordable.filter(x=>x.type==='weapon');
+          if(w.length>0)pick=w.reduce((a,b)=>aiItemPower(a)>aiItemPower(b)?a:b,w[0]);
+        }else if(hasDot===0&&(st==='poison'||st==='burn')){
+          let d=affordable.filter(x=>x.type===(st==='poison'?'poison':'burn'));
+          if(d.length>0)pick=d.reduce((a,b)=>aiItemPower(a)>aiItemPower(b)?a:b,d[0]);
+        }
       }
     }
 
@@ -1524,9 +1585,11 @@ function aiShop(p){
   }
 }
 
-// AI道具评分函数（不给额外资源，只是让AI更聪明地评估）
-function aiItemPower(it){
+// AI道具评分函数（支持按流派偏好加成，通过全局 _aiCurStyle 传递）
+let _aiCurStyle=null;
+function aiItemPower(it,style){
   if(!it)return 0;
+  style=style||_aiCurStyle;
   let m=1+((it.lv||1)-1)*0.5;
   let pw=0;
   if(it.dmg)pw+=it.dmg*m/(it.cd||2);
@@ -1541,6 +1604,22 @@ function aiItemPower(it){
   if(it.freezeTime)pw+=20*m;
   if(it.reflectPct)pw+=15*m;
   if(it.lifesteal)pw+=20*m;
+  if(it.startShield)pw+=it.startShield*m*0.4;
+  if(it.thornsBonus)pw+=it.thornsBonus*100;
+  if(it.healReduce)pw+=it.healReduce*20;
+  // 流派偏好加分
+  if(style){
+    if(style==='physics'&&it.type==='weapon')pw*=1.5;
+    else if(style==='poison'&&it.type==='poison')pw*=1.8;
+    else if(style==='burn'&&it.type==='burn')pw*=1.8;
+    else if(style==='tank'&&(it.type==='shield'||it.type==='heal'))pw*=1.6;
+    else if(style==='crit'){
+      if(it.type==='weapon')pw*=1.3;
+      if(it.buffType==='crit')pw*=2.0;
+    }
+    // 随机扰动避免完全确定性
+    pw*=(0.9+Math.random()*0.2);
+  }
   return pw;
 }
 
